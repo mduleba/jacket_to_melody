@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card" style="width: 36rem;">
+        <div class="card-body text-center">
+            <div class="row">
+                <div class="col">
+                    Blue Team Score: {{ game.blue_team_score }}
+                </div>
+                <div class="col text-right">
+                    Red Team Score: {{ game.red_team_score }}
+                </div>
+            </div>
+            <h1 class="card-title">Guess the Song!</h1>
+            <hr/>
+            <div class="form-row">
+                <div class="col">
+                    <label for="teamBlueTime">Blue Team Time:</label>
+                    <input type="number" id="teamBlueTime" class="form-control" min="1" value="20" oninput="updateBet()">
+                </div>
+                <div class="col">
+                    <label for="teamRedTime">Red Team Time:</label>
+                    <input type="number" id="teamRedTime" class="form-control" min="1" value="20" oninput="updateBet()">
+                </div>
+            </div>
+            <hr/>
+            <div id="bettingBar" class="bg-secondary text-white text-center py-2 mb-3">
+                <span id="bettingText">Let's bet!</span>
+            </div>
+            <button id="startBtn" onclick="startGame()" class="btn btn-primary">Start</button>
+            <button id="naayBtn" onclick="playRest()" class="btn btn-secondary d-none">Naay</button>
+            <hr/>
+            <a href="{% url 'main_menu' %}" class="btn btn-primary">Back</a>
+        </div>
+    </div>
+
+    <hr>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#answerModal">
+      Show Answer
+    </button>
+    <div class="modal fade" id="answerModal" tabindex="-1" aria-labelledby="answerModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="answerModalLabel">Song Answer</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ song.title }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script>
+var song = new Howl({
+    src: ['{{ song.audio_file.url }}'],
+    format: ['mp3']
+});
+
+var teamBlueTime = document.getElementById("teamBlueTime");
+var teamRedTime = document.getElementById("teamRedTime");
+var bettingBar = document.getElementById("bettingBar");
+var bettingText = document.getElementById("bettingText");
+var startBtn = document.getElementById("startBtn");
+var naayBtn = document.getElementById("naayBtn");
+
+var currentTeam = null;
+var songPlayCount = 0;
+var winningTime = null;
+var isSongPlaying = false;
+
+naayBtn.onclick = function() {
+    if (!isSongPlaying) {
+        songPlayCount++;
+        var blueTime = parseInt(teamBlueTime.value);
+        var redTime = parseInt(teamRedTime.value);
+        var continuingTime = (blueTime > redTime) ? blueTime : redTime;
+        playSong(continuingTime - winningTime);
+        currentTeam = (currentTeam === "Blue") ? "Red" : "Blue";
+        bettingBar.className = "bg-" + (currentTeam === "Blue" ? "primary" : "danger") + " text-white text-center py-2 mb-3";
+        bettingText.innerText = "Team " + currentTeam + " continues";
+    }
+};
+
+function updateBet() {
+    var blueTime = parseInt(teamBlueTime.value);
+    var redTime = parseInt(teamRedTime.value);
+    if (isNaN(blueTime) || isNaN(redTime)) {
+        bettingBar.className = "bg-secondary text-white text-center py-2 mb-3";
+        bettingText.innerText = "Let's bet!";
+        return;
+    }
+
+    currentTeam = (blueTime < redTime) ? "Blue" : "Red";
+    bettingBar.className = "bg-" + (currentTeam === "Blue" ? "primary" : "danger") + " text-white text-center py-2 mb-3";
+    bettingText.innerText = "Team " + currentTeam + " starts";
+}
+
+function startGame() {
+    var blueTime = parseInt(teamBlueTime.value);
+    var redTime = parseInt(teamRedTime.value);
+    if (isNaN(blueTime) || isNaN(redTime)) {
+        alert("Please enter valid numbers for both teams' time.");
+        return;
+    }
+
+    winningTime = (blueTime < redTime) ? blueTime : redTime;
+    songPlayCount++;
+
+    if(songPlayCount === 1) {
+        startBtn.innerText = "Yeeey";
+        startBtn.onclick = increaseScore;
+        naayBtn.className = "btn btn-secondary";
+        naayBtn.disabled = false;
+        playSong(winningTime);
+    } else {
+        increaseScore();
+    }
+}
+
+function playSong(seconds) {
+    song.play();
+    isSongPlaying = true;
+    setTimeout(stopSong, seconds * 1000);
+}
+
+function stopSong() {
+    song.pause();
+    isSongPlaying = false;
+}
+
+function increaseScore() {
+    window.location.href = "/increase_score/" + currentTeam.toLowerCase() + "/";
+}
+
+    </script>
+{% endblock %}
