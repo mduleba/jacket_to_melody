@@ -26,12 +26,16 @@ class SongAddForm(forms.ModelForm):
 
 
 class SongChangeForm(forms.ModelForm):
+    genres = forms.CharField(max_length=200, required=False)
+
     class Meta:
         model = Song
         fields = ['title', 'author', 'genres', 'drawn', 'audio_file']
 
 
 class SongAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'genres', 'drawn']
+
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:
             return SongAddForm
