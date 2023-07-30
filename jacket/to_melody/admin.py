@@ -28,7 +28,7 @@ class SongAddForm(forms.ModelForm):
 class SongChangeForm(forms.ModelForm):
     class Meta:
         model = Song
-        fields = ['title', 'author', 'drawn', 'audio_file']
+        fields = ['title', 'author', 'genres', 'drawn', 'audio_file']
 
 
 class SongAdmin(admin.ModelAdmin):
