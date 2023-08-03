@@ -15,6 +15,7 @@
                 </div>
             </div>
             <h1 class="card-title">Guess the Song!</h1>
+            <h5 class="card-title">{{ object.genres }}</h5>
             <hr/>
             <div class="form-row">
                 <div class="col">
@@ -49,7 +50,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            {{ song.title }}
+            {{ song.title }} - {{ song.author }}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
