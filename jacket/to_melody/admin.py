@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 
+from .external_client.shazam import ShazamSong
 from .downloaders.from_yt import YTSong
 from .models import Song
 
@@ -33,8 +34,17 @@ class SongChangeForm(forms.ModelForm):
         fields = ['title', 'author', 'genres', 'drawn', 'audio_file']
 
 
+@admin.action(description="Download genre for selected song")
+def find_genres(modeladmin, request, queryset):
+    for song in queryset:
+        shazam = ShazamSong(song.title)
+        song.genres = shazam.genres
+        song.save()
+
+
 class SongAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'genres', 'drawn']
+    actions = [find_genres]
 
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:

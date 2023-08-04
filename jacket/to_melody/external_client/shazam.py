@@ -1,10 +1,6 @@
-from dataclasses import dataclass
 from functools import cached_property
 
 import requests
-import json
-
-from requests import Response
 
 
 class ShazamClient:
@@ -61,6 +57,10 @@ class ShazamSong:
         response = self.client.get(self.key)
         return response.json()
 
-
-
+    @property
+    def genres(self):
+        try:
+            return ', '.join(self.details['genres'].values())
+        except Exception:
+            return ''
 
