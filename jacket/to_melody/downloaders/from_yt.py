@@ -2,6 +2,7 @@ from functools import cached_property
 import os
 import pytube as pt
 from dataclasses import dataclass, field
+import platform
 
 from ..models import Song
 from django.core.files.base import ContentFile, File
@@ -60,6 +61,9 @@ class YTSong:
         self.file_path = ""
 
     def copy_to_media(self, media_path='C:\\Users\\duleb\\PycharmProjects\\jacket_to_melody\\jacket\\media\\songs\\'):
+        if 'macOS' in platform.platform():
+            media_path = '/Users/michal/PycharmProjects/jacket_to_melody/jacket/media/songs/'
+
         src_path = self.file_path
         dst_path = media_path + self.file_name
         shutil.move(src_path, dst_path)

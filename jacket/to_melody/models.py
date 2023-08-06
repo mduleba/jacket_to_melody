@@ -10,6 +10,7 @@ class Song(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
     genres = models.CharField(max_length=200)
+    tip = models.CharField(max_length=200)
     audio_file = models.FileField(upload_to='songs/')
     drawn = models.BooleanField(default=False)
 
