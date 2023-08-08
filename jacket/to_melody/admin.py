@@ -31,7 +31,7 @@ class SongChangeForm(forms.ModelForm):
 
     class Meta:
         model = Song
-        fields = ['title', 'author', 'genres', 'tip', 'drawn', 'audio_file']
+        fields = ['title', 'author', 'genres', 'tip', 'polish', 'drawn', 'audio_file']
 
 
 @admin.action(description="Download genre for selected song")
@@ -43,7 +43,7 @@ def find_genres(modeladmin, request, queryset):
 
 
 class SongAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'genres', 'tip', 'drawn']
+    list_display = ['title', 'author', 'genres', 'tip', 'polish', 'drawn']
     actions = [find_genres]
 
     def get_form(self, request, obj=None, **kwargs):

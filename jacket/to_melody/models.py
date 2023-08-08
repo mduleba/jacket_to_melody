@@ -12,6 +12,7 @@ class Song(models.Model):
     genres = models.CharField(max_length=200)
     tip = models.CharField(max_length=200)
     audio_file = models.FileField(upload_to='songs/')
+    polish = models.BooleanField(default=False)
     drawn = models.BooleanField(default=False)
 
     def __str__(self):
